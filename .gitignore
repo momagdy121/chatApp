@@ -1,0 +1,5 @@
+node_modules/
+models/cat.model.js
+.vscode/
+config.env
+test.js
