@@ -1,12 +1,11 @@
 import { Router } from "express";
+import multer from "multer";
 import storyController from "../controllers/storyController.js";
 import authValidation from "../middlewares/authValidation/index.js";
-import checkBodyFieldsExistence from "../middlewares/globalValidation/checkBodyFieldsExistence.js";
 import isDocumentExists from "../middlewares/globalValidation/isDocumentExists.js";
 import storyModel from "../models/storyModel.js";
 import isDocumentYours from "../middlewares/globalValidation/isDocumentYours.js";
 import validateObjectID from "../middlewares/globalValidation/validateObjectID.js";
-import multer from "multer";
 import uploadImage from "./../middlewares/uploadImage.js";
 
 const upload = multer();

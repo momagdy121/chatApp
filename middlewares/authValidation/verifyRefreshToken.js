@@ -19,19 +19,17 @@ const verifyRefreshToken = async (req, res, next) => {
 
     if (!user) return next(userErrors.userNotFound());
 
-    checkTokenDate(user, user.refreshTokenCreatedAt, payload, authErrors);
+    checkTokenDate(
+      user.changePassAt,
+      user.refreshTokenCreatedAt,
+      payload,
+      authErrors
+    );
 
     req.user = user;
     next();
   } catch (error) {
-    if (
-      error.name === "TokenExpiredError" ||
-      error.name === "JsonWebTokenError"
-    ) {
-      return next(authErrors.invalidRefreshToken());
-    } else {
-      return next(error); // Generic invalid token error
-    }
+    next(error);
   }
 };
 

@@ -4,19 +4,12 @@ import userErrors from "./../../errors/userErrors.js";
 import userModel from "../../models/userModel.js";
 import catchAsync from "../../utils/catchAsync.js";
 import checkTokenDate from "../../services/token_management/checkTokenDate.js";
-import handleTokenRefresh from "../../services/token_management/handleTokenRefresh.js";
 
 const verifyAccessToken = catchAsync(async (req, res, next) => {
   try {
-    const refreshToken = req.cookies.refreshToken;
     const accessToken = req.cookies.accessToken;
 
-    if (!refreshToken) return next(authErrors.missingRefreshToken());
-
-    if (!accessToken)
-      return await handleTokenRefresh(req, res, (err) => {
-        return next(err);
-      });
+    if (!accessToken) return next(authErrors.missingAccessToken());
 
     const payload = jwt.verify(
       accessToken,
@@ -27,17 +20,12 @@ const verifyAccessToken = catchAsync(async (req, res, next) => {
 
     if (!user) return next(userErrors.userNotFound());
 
-    checkTokenDate(user, user.accessTokenCreatedAt, payload);
+    checkTokenDate(user.changePassAt, user.accessTokenCreatedAt, payload);
 
     req.user = user;
-    return next();
+    next();
   } catch (error) {
-    if (error.name === "TokenExpiredError") {
-      // If the access token is expired, refresh it
-      return await handleTokenRefresh(req, res);
-    } else {
-      return next(authErrors.invalidAccessToken());
-    }
+    next(error);
   }
 });
 

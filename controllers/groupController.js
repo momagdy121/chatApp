@@ -3,7 +3,7 @@ import groupModel from "../models/groupModel.js";
 import sendResponse from "../utils/sendResponse.js";
 import groupErrors from "../errors/groupErrors.js";
 import userModel from "../models/userModel.js";
-import eventTypes from "./../services/offlineNotification/enums.js";
+import eventTypes from "./../services/offlineNotification/eventTypes.js";
 
 import {
   notifyGroup,

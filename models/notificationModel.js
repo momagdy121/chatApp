@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import notificationTypes from "./../services/offlineNotification/enums.js";
+import notificationTypes from "../services/offlineNotification/eventTypes.js";
 const notificationSchema = new mongoose.Schema({
   type: {
     type: String,

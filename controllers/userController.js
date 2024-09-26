@@ -6,7 +6,7 @@ import sendResponse from "../utils/sendResponse.js";
 import userPipelines from "../pipelinesStages/userPipelines.js";
 import notificationModel from "../models/notificationModel.js";
 import { notifyUser } from "../socket.io/utils.js";
-import eventTypes from "../services/offlineNotification/enums.js";
+import eventTypes from "../services/offlineNotification/eventTypes.js";
 import generalPipelines from "../pipelinesStages/generalPiplines.js";
 
 const checkUsername = catchAsync(async (req, res, next) => {

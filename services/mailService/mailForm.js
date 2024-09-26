@@ -9,7 +9,7 @@ const sendEmail = async (Options) => {
   });
 
   const mailOptions = {
-    from: "social media <AkhtarlyCompany@gmail.com>", //#Todo will be modified
+    from: "Chat App <chatapp976@gmail.com>", //#Todo will be modified
     to: Options.email,
     subject: Options.subject,
     text: Options.text,

@@ -1,3 +1,4 @@
+import eventTypes from "../../services/offlineNotification/eventTypes.js";
 import sendGroupMessage from "../services/messageServices/sendGroupMessage.js";
 import sendIoMessage from "../services/messageServices/sendIoMessage.js";
 import typingState from "../services/messageServices/typingState.js";
@@ -12,8 +13,7 @@ import {
 export const userSocketMap = new Map(); // Moved to this module
 
 export const handleConnection = async (io, socket) => {
-  const userId = socket.user?._id;
-  if (!userId) return;
+  if (!socket.user) return;
 
   // Add the user to the online state
   addUserToOnline(socket, io, userSocketMap);
@@ -21,17 +21,21 @@ export const handleConnection = async (io, socket) => {
   joinGroupRooms(socket);
 
   // Listen for messages sent by the user
-  socket.on("sendMessage", (msg) => sendIoMessage(msg, socket, io));
-
-  socket.on("sendGroupMessage", (msg) => sendGroupMessage(msg, socket, io));
-
-  socket.on("typing", (msg) => {
-    typingState(msg, socket, io, "typing:start");
+  socket.on("sendMessage", async (msg, ack) => {
+    await sendIoMessage(msg, socket, io, ack);
   });
 
-  socket.on("stopTyping", (msg) => {
-    typingState(msg, socket, io, "typing:stop");
+  socket.on("sendGroupMessage", (msg) => {
+    sendGroupMessage(msg, socket, io);
   });
+
+  socket.on("typing", (msg) =>
+    typingState(msg, socket, io, eventTypes.typingStart)
+  );
+
+  socket.on("stopTyping", (msg) =>
+    typingState(msg, socket, io, eventTypes.typingStop)
+  );
 
   // Handle disconnection
   socket.on("disconnect", () => {

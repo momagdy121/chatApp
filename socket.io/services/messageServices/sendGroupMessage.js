@@ -1,5 +1,5 @@
 import messageModel from "../../../models/messageModel.js";
-import eventTypes from "./../../../services/offlineNotification/enums.js";
+import eventTypes from "../../../services/offlineNotification/eventTypes.js";
 
 import {
   constructGroupMessage,
@@ -10,7 +10,7 @@ import {
   notifyGroup,
 } from "../../utils.js";
 
-const sendGroupMessage = async (msg, socket, io) => {
+const sendGroupMessage = async (msg, socket, io, ack) => {
   try {
     const message = constructGroupMessage(msg, socket);
 
@@ -18,7 +18,6 @@ const sendGroupMessage = async (msg, socket, io) => {
 
     const newMessage = await messageModel.create(message);
 
-    let offlineMembers = [];
     //for every member
     await notifyGroup(
       group._id,
@@ -29,7 +28,11 @@ const sendGroupMessage = async (msg, socket, io) => {
       { saveToOfflineUser: false }
     );
 
-    offlineMembers = getOfflineMembers(group.members);
+    const offlineMembers = getOfflineMembers(group.members);
+
+    const onlineMembers = getOnlineMembers(group.members);
+    if (onlineMembers.length > 0)
+      ack({ message: newMessage._id, status: eventTypes.messageDelivered });
 
     if (offlineMembers.length > 0)
       saveMsgToOfflineUser(message, offlineMembers);

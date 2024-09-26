@@ -3,7 +3,7 @@ import storyModel from "../models/storyModel.js";
 import sendResponse from "./../utils/sendResponse.js";
 import storyErrors from "../errors/storyErrors.js";
 import { notifyContacts, notifyUser } from "../socket.io/utils.js";
-import eventsTypes from "../services/offlineNotification/enums.js";
+import eventsTypes from "../services/offlineNotification/eventTypes.js";
 
 const addStory = catchAsync(async (req, res, next) => {
   const { description } = req.body;

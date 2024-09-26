@@ -19,11 +19,16 @@ const messageSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "groups",
     },
+
     text: { type: String, required: [true, "message can't be empty"] },
     status: {
       type: String,
-      enum: ["sent", "delivered", "read"],
+      enum: ["sent", "delivered"],
       default: "sent", // Initial status when a message is created
+    },
+    seen: {
+      type: Boolean,
+      default: false,
     },
     isEdited: {
       type: Boolean,

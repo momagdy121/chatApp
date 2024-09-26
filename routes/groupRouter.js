@@ -26,7 +26,6 @@ groupRouter
 
 groupRouter
   .route("/:groupId")
-  .get(groupController.getGroupById)
   .patch(isAdmin, groupController.editGroupDescription)
   .delete(isAdmin, groupController.deleteGroup);
 // Add members to a group

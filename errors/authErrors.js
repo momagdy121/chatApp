@@ -12,8 +12,10 @@ const authErrors = {
   accountNotVerified: () =>
     new ApiError("Your account is not yet verified", 403),
   invalidAccessToken: () => new ApiError("Invalid access token", 401),
-  invalidRefreshToken: () => new ApiError("Invalid refresh token", 401),
-  missingRefreshToken: () => new ApiError("Please log in first", 401),
+  invalidRefreshToken: () =>
+    new ApiError("Invalid refresh token,please login again", 401),
+  missingAccessToken: () => new ApiError("access token not found", 401),
+  missingRefreshToken: () => new ApiError("refresh token not found", 401),
   tokenExpired: () => new ApiError("Token expired", 401),
 };
 

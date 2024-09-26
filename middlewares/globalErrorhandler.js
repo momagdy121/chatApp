@@ -57,9 +57,9 @@ function handleOtherErrors(err) {
 }
 
 function handleInvalidToken() {
-  return new ApiError("invalid Token please login again", 401);
+  return new ApiError("invalid Token", 401);
 }
 function handleTokenExpiration() {
-  return new ApiError("The token has been expired ,please login again", 401);
+  return new ApiError("The token has been expired", 401);
 }
 export default globalErrorHandler;

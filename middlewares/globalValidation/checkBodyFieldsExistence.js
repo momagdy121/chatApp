@@ -2,7 +2,6 @@ import ApiError from "../../utils/apiError.js";
 
 function checkBodyFieldsExistence(fields) {
   return (req, res, next) => {
-    console.log(req.body);
     const missingFields = fields.filter((field) => !req.body[field]).join(", ");
 
     if (missingFields) {

@@ -67,6 +67,18 @@ export const constructMessage = (jsonMsg, socket) => {
   return message;
 };
 
+export const constructSeenMessage = (jsonMsg) => {
+  const message = JSON.parse(jsonMsg);
+  if (!message.group && !message.chat)
+    throw new Error("Invalid message format should have group or chat");
+  return message;
+};
+
+export const isAuthorizedToMarkAsRead = (CurrentChat, chats) => {
+  if (!chats.includes(CurrentChat.toString()))
+    throw new Error("Unauthorized to mark as read in this chat");
+};
+
 export const constructGroupMessage = (jsonMsg, socket) => {
   const message = JSON.parse(jsonMsg);
   if (!message.group || !message.text)
@@ -74,6 +86,7 @@ export const constructGroupMessage = (jsonMsg, socket) => {
   message.sender = socket.user._id.toString();
   return message;
 };
+
 export const findGroup = async (groupId, user) => {
   const group = await groupModel.findById(groupId);
   if (!group) throw new Error("Group not found");
@@ -89,6 +102,9 @@ export const pushMessageToGroup = async (message, group) => {
 };
 export const getOfflineMembers = (groupMembers) => {
   return groupMembers.filter((member) => !userSocketMap.has(member.toString()));
+};
+export const getOnlineMembers = (groupMembers) => {
+  return groupMembers.filter((member) => userSocketMap.has(member.toString()));
 };
 export async function notifyGroup(
   groupId,
@@ -150,4 +166,20 @@ export const removeMemberFromRoom = (memberId, groupId) => {
   const memberSocketId = getUserSocketId(memberId); // Get the socket ID if the member is online
   if (memberSocketId)
     io.sockets.sockets.get(memberSocketId).leave(groupId.toString()); // Make them leave the room
+};
+
+export const MarkMessageChatAsRead = async (chatIdOrGroupId) => {
+  await messageModel.updateMany(
+    { chat: chatIdOrGroupId, seen: false },
+
+    { $set: { seen: true } }
+  );
+};
+
+export const getOtherUserChatId = async (chatId, userId) => {
+  const chat = await chatModel.findById(chatId).select("participants");
+
+  return chat.participants.find(
+    (user) => user.toString() !== userId.toString()
+  );
 };

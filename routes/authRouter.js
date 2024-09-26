@@ -6,7 +6,6 @@ import authValidation from "../middlewares/authValidation/index.js";
 
 import userController from "../controllers/userController.js";
 import uploadImage from "../middlewares/uploadImage.js";
-import handleTokenRefresh from "../services/token_management/handleTokenRefresh.js";
 import checkBodyFieldsExistence from "../middlewares/globalValidation/checkBodyFieldsExistence.js";
 
 const authRouter = Router();
@@ -27,7 +26,11 @@ authRouter.post(
   authValidation.isVerified,
   authController.sendVerificationCode
 );
-authRouter.post("/token", handleTokenRefresh, authController.refreshTheToken);
+authRouter.post(
+  "/refresh",
+  authValidation.verifyRefreshToken,
+  authController.refreshTheToken
+);
 
 authRouter.patch(
   "/verify",

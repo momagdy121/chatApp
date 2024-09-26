@@ -5,7 +5,7 @@ import ApiError from "./../Utils/apiError.js";
 import chatModel from "./../models/chatModel.js";
 import sendResponse from "../utils/sendResponse.js";
 import { notifyGroup, notifyUser } from "../socket.io/utils.js";
-import eventTypes from "./../services/offlineNotification/enums.js";
+import eventTypes from "./../services/offlineNotification/eventTypes.js";
 import { pagination } from "./../utils/queryProcesses.js";
 
 export const getChat = catchAsync(async (req, res, next) => {
@@ -79,10 +79,33 @@ export const getOfflineMessages = catchAsync(async (req, res, next) => {
 
   if (!newMessages || newMessages.length === 0) return res.send([]); // No new messages to return
 
-  const messages = await messageModel.find({ _id: { $in: newMessages } }); // Get the populated messages
+  await messageModel.updateMany(
+    { _id: { $in: newMessages } }, // Find all messages with _id in newMessages
+    { $set: { status: "delivered" } } // Set their status to "delivered"
+  );
+
+  const messages = await messageModel.find({ _id: { $in: newMessages } });
   // Remove the retrieved messages from the newMessages array
   await userModel.findByIdAndUpdate(userId, {
     $set: { newMessages: [] }, // Clear the newMessages array
+  });
+
+  [...messages].forEach((message) => {
+    let messageContent;
+
+    if (message.group) {
+      messageContent = {
+        _id: message._id,
+        group: message.group,
+      };
+    } else {
+      messageContent = {
+        _id: message._id,
+        chat: message.chat,
+        receiver: message.receiver,
+      };
+    }
+    notifyUser(messageContent, message.sender, eventTypes.messageDelivered);
   });
 
   sendResponse(res, { data: { messages } });

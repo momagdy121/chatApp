@@ -64,7 +64,7 @@ const verifyAccount = catchAsync(async (req, res, next) => {
 
 const login = catchAsync(async (req, res, next) => {
   const user = req.user;
-  const tokens = await generateTokensFullProcess(user, res);
+  const { newAccessToken } = await generateTokensFullProcess(user, res);
 
   sendResponse(res, {
     message: "logged in",
@@ -75,7 +75,7 @@ const login = catchAsync(async (req, res, next) => {
         avatar: user.avatar,
         id: user._id,
       },
-      tokens,
+      accessToken: newAccessToken,
     },
   });
 });
@@ -117,6 +117,7 @@ const verifyForgotPasswordCode = catchAsync(async (req, res, next) => {
 });
 
 const refreshTheToken = catchAsync(async (req, res, next) => {
+  await generateTokensFullProcess(req.user, res);
   sendResponse(res, {
     message: "refreshed",
   });
