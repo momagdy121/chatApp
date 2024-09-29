@@ -1,7 +1,7 @@
 import userModel from "../models/userModel.js";
 import catchAsync from "../utils/catchAsync.js";
-import verificationMail from "../services/mailService/verificationMail.js";
-import resetPassMail from "../services/mailService/resetPassMail.js";
+import verificationMail from "../services/mail/verificationMail.js";
+import resetPassMail from "../services/mail/resetPassMail.js";
 import generateTokensFullProcess from "../services/token_management/generateTokensFullProcess.js";
 import sendResponse from "../utils/sendResponse.js";
 

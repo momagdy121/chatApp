@@ -14,6 +14,8 @@ const userErrors = {
     new ApiError("this username or email already taken", 409),
   provideArrayOfIds: () =>
     new ApiError("Please provide an array of users ids", 400),
+
+  signInWithGoogle: () => new ApiError("sign in with google only", 400),
 };
 
 export default userErrors;

@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 import validator from "validator";
 import bcryptjs from "bcryptjs";
 import rule from "../utils/rules.js";
-import generateOTP from "../services/mailService/generateOTP.js";
-import sendVC from "../services/mailService/verificationMail.js";
+import generateOTP from "../services/mail/generateOTP.js";
+import sendVC from "../services/mail/verificationMail.js";
 
 const { isEmail } = validator;
 const { hash, compare } = bcryptjs;
@@ -35,7 +35,6 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
       minlength: 8,
     },
     avatar: {
@@ -175,9 +174,7 @@ userSchema.pre("save", async function (next) {
     this.password = await hash(this.password, 12);
     this.changePassAt = Math.floor(Date.now() / 1000);
   }
-  if (this.isNew) {
-    this.rule = rule.USER;
-    this.verified = false;
+  if (this.isNew && !this.verified) {
     const OTP = await this.createOTP();
     await sendVC(this.email, OTP);
   }

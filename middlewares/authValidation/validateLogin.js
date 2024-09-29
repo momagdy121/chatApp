@@ -11,6 +11,7 @@ const validateLogin = async (req, res, next) => {
 
   if (!user) return next(userErrors.userNotFound());
 
+  if (!user.password) return next(userErrors.signInWithGoogle());
   const isMatch = await user.comparePassword(password, user.password);
 
   if (!isMatch) return next(userErrors.incorrectPassword());

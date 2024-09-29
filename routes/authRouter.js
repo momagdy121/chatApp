@@ -8,6 +8,10 @@ import userController from "../controllers/userController.js";
 import uploadImage from "../middlewares/uploadImage.js";
 import checkBodyFieldsExistence from "../middlewares/globalValidation/checkBodyFieldsExistence.js";
 
+import passport from "passport";
+
+import "../services/authStrategies/google.js";
+
 const authRouter = Router();
 const upload = multer();
 //login , sign up and verify account
@@ -26,6 +30,7 @@ authRouter.post(
   authValidation.isVerified,
   authController.sendVerificationCode
 );
+
 authRouter.post(
   "/refresh",
   authValidation.verifyRefreshToken,
@@ -41,6 +46,19 @@ authRouter.patch(
 );
 
 authRouter.post("/login", authValidation.validateLogin, authController.login);
+
+authRouter.get(
+  "/google",
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+  })
+);
+
+authRouter.get(
+  "/google/redirect",
+  passport.authenticate("google", { session: false }),
+  authController.login
+);
 
 authRouter.post("/logout", authController.logout);
 
