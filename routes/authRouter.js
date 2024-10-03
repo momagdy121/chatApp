@@ -7,7 +7,6 @@ import authValidation from "../middlewares/authValidation/index.js";
 import userController from "../controllers/userController.js";
 import uploadImage from "../middlewares/uploadImage.js";
 import checkBodyFieldsExistence from "../middlewares/globalValidation/checkBodyFieldsExistence.js";
-
 import passport from "passport";
 
 import "../services/authStrategies/google.js";
@@ -60,7 +59,11 @@ authRouter.get(
   authController.login
 );
 
-authRouter.post("/logout", authController.logout);
+authRouter.post(
+  "/logout",
+  authValidation.verifyAccessToken,
+  authController.logout
+);
 
 //forgot password
 authRouter.post(
@@ -78,6 +81,7 @@ authRouter.post(
 
 authRouter.patch(
   "/forgot-password/reset",
+  checkBodyFieldsExistence(["email", "new", "code"]),
   authValidation.validateEmail,
   authValidation.validateOTP,
   userController.changePassword

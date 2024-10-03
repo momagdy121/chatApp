@@ -1,5 +1,5 @@
 import ApiError from "../../utils/apiError.js";
-
+import mongoose from "mongoose";
 export default function isDocumentExists(
   documentModel,
   paramName,
@@ -7,6 +7,11 @@ export default function isDocumentExists(
 ) {
   return async (req, res, next) => {
     try {
+      //check if the id is valid
+
+      if (!mongoose.Types.ObjectId.isValid(req.params[paramName]))
+        return next(new ApiError(`invalid ${documentName} id`, 400));
+
       const documentId = req.params[paramName];
       const isExisted = await documentModel.exists({ _id: documentId });
 

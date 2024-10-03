@@ -4,7 +4,8 @@ import userModel from "./../../models/userModel.js";
 const offlineOneNotifier = async (userId, notificationType, content) => {
   const notification = await notificationModel.create({
     type: notificationType,
-    content,
+    ...content,
+    user: userId,
   });
 
   await userModel.findByIdAndUpdate(userId, {

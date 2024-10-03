@@ -13,7 +13,7 @@ export default async function generateTokensFullProcess(user, res) {
     httpOnly: true,
     sameSite: "Strict",
     maxAge: process.env.REFRESH_TOKEN_COOKIE_EXPIRE_IN,
-    path: "api/auth/refresh",
+    path: "api/auth",
   });
 
   res.cookie("accessToken", newAccessToken, {

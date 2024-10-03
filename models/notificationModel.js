@@ -19,7 +19,7 @@ const notificationSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  seen: {
+  delivered: {
     type: Boolean,
     default: false,
   },

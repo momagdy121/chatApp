@@ -14,8 +14,13 @@ const authErrors = {
   invalidAccessToken: () => new ApiError("Invalid access token", 401),
   invalidRefreshToken: () =>
     new ApiError("Invalid refresh token,please login again", 401),
-  missingAccessToken: () => new ApiError("access token not found", 401),
-  missingRefreshToken: () => new ApiError("refresh token not found", 401),
+  missingAccessToken: () =>
+    new ApiError(
+      "access token not found , login again or refresh it using refresh token",
+      401
+    ),
+  missingRefreshToken: () =>
+    new ApiError("refresh token not found ,login again or provide it", 401),
   tokenExpired: () => new ApiError("Token expired", 401),
 };
 

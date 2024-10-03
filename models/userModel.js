@@ -110,10 +110,10 @@ const userSchema = new mongoose.Schema(
       },
     ],
 
+    isLoggedIn: { type: Boolean, default: false },
     changePassAt: { type: Date, default: undefined },
     accessTokenCreatedAt: { type: Number, default: undefined },
     refreshTokenCreatedAt: { type: Number, default: undefined },
-
     hashedCode: String,
     codeExpired: Date,
   },

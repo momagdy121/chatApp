@@ -7,7 +7,7 @@ import groupModel from "./../models/groupModel.js";
 import verifyAccessToken from "./../middlewares/authValidation/verifyAccessToken.js";
 import checkBodyFieldsExistence from "./../middlewares/globalValidation/checkBodyFieldsExistence.js";
 import areContacts from "../middlewares/groupValidation/areContacts.js";
-import alreadyMembers from "../middlewares/groupValidation/AlreadyMembers.js";
+import isAlreadyMembers from "../middlewares/groupValidation/AlreadyMembers.js";
 
 const groupRouter = Router();
 
@@ -26,6 +26,7 @@ groupRouter
 
 groupRouter
   .route("/:groupId")
+  .get(groupController.getGroupById)
   .patch(isAdmin, groupController.editGroupDescription)
   .delete(isAdmin, groupController.deleteGroup);
 // Add members to a group
@@ -35,7 +36,7 @@ groupRouter
     isAdmin,
     checkBodyFieldsExistence(["members"]),
     areContacts,
-    alreadyMembers,
+    isAlreadyMembers,
     groupController.addMembers
   )
   .delete(
@@ -44,6 +45,11 @@ groupRouter
     groupController.removeMember
   )
   .get(groupController.getGroupMembers);
+
+// Leave a group
+groupRouter
+  .route("/:groupId/leave")
+  .delete(isGroupMember, groupController.leaveGroup);
 
 // Get group messages
 groupRouter.route("/:groupId/messages").get(groupController.getGroupMessages);

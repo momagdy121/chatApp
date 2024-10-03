@@ -17,6 +17,8 @@ const verifyRefreshToken = async (req, res, next) => {
 
     const user = await userModel.findById(payload.id);
 
+    if (!user.isLoggedIn) return next(userErrors.userNotLoggedIn());
+
     if (!user) return next(userErrors.userNotFound());
 
     checkTokenDate(

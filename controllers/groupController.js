@@ -18,6 +18,7 @@ import generalPipelines from "./../pipelinesStages/generalPiplines.js";
 // Create a new group
 const createGroup = catchAsync(async (req, res) => {
   const { _id: admin } = req.user;
+  const user = req.user;
   const { name, description } = req.body;
 
   const group = await groupModel.create({
@@ -26,6 +27,10 @@ const createGroup = catchAsync(async (req, res) => {
     admin,
     members: [admin],
   });
+
+  // Add the group to the user's groups
+  user.groups.push(group._id);
+  await user.save();
 
   res.status(200).json({ state: "success", group });
 });
@@ -53,7 +58,7 @@ const deleteGroup = catchAsync(async (req, res, next) => {
 const getGroups = catchAsync(async (req, res, next) => {
   const user = req.user;
   const groups = await groupModel
-    .find({ $in: user.groups })
+    .find({ _id: { $in: user.groups } })
     .select("name description _id admin")
     .populate("admin", "name username avatar _id")
     .lean();
@@ -74,6 +79,12 @@ const getGroupMessages = catchAsync(async (req, res, next) => {
 
     ...generalPipelines.paginate("messages", limit, skip),
   ]);
+
+  if (Messages.length === 0) {
+    return sendResponse(res, {
+      data: { total: 0, page: 0, pages: 0, limit: 0, messages: [] },
+    });
+  }
 
   const { total, messages } = Messages[0];
 
@@ -205,6 +216,14 @@ const leaveGroup = catchAsync(async (req, res, next) => {
   });
 });
 
+const getGroupById = catchAsync(async (req, res, next) => {
+  const { groupId } = req.params;
+  const group = await groupModel
+    .findById(groupId)
+    .select("_id name description admin");
+  sendResponse(res, { data: { group } });
+});
+
 const groupController = {
   createGroup,
   editGroupDescription,
@@ -215,5 +234,6 @@ const groupController = {
   addMembers,
   removeMember,
   leaveGroup,
+  getGroupById,
 };
 export default groupController;

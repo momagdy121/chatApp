@@ -40,6 +40,8 @@ userRouter.get("/pending-requests", userController.getPendingRequests);
 userRouter.get("/contacts", userController.getContacts);
 userRouter.get("/online", userController.getOnlineContacts);
 
+userRouter.get("/notifications", userController.getOfflineNotifications);
+
 userRouter
   .post("/:userId/request", userController.sendRequest)
   .patch("/:userId/request/reject", userController.rejectRequest)
@@ -48,12 +50,10 @@ userRouter
 userRouter.get("/:userId", userController.getUserById);
 
 userRouter.get(
-  "/users",
+  "/",
   checkBodyFieldsExistence(["userIds"]),
   userController.getUsersByIds
 );
-
-userRouter.get("/:notifications", userController.getOfflineNotifications);
 
 //admin //owner
 

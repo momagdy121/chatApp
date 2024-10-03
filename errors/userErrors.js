@@ -16,6 +16,10 @@ const userErrors = {
     new ApiError("Please provide an array of users ids", 400),
 
   signInWithGoogle: () => new ApiError("sign in with google only", 400),
+
+  userNotLoggedIn: () => new ApiError("you need to login first", 401),
+  alreadyContact: () =>
+    new ApiError("you are already contact with this user", 400),
 };
 
 export default userErrors;

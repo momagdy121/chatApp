@@ -16,6 +16,7 @@ function addFieldsWithBasicInfo(additionFields = {}) {
         username: 1,
         name: 1,
         avatar: 1,
+        online: 1,
         ...additionFields,
       },
     },

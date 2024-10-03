@@ -6,12 +6,6 @@ const checkTokenDate = (changePassAt, TokenCreatedAt, payload) => {
       "This token is no longer valid (old token detected)",
       401
     );
-
-  if (changePassAt > payload.iat)
-    throw new apiError(
-      "this token is no longer valid because password has been changed",
-      401
-    );
 };
 
 export default checkTokenDate;

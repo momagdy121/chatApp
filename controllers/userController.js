@@ -8,6 +8,8 @@ import notificationModel from "../models/notificationModel.js";
 import { notifyUser } from "../socket.io/utils.js";
 import eventTypes from "../services/offlineNotification/eventTypes.js";
 import generalPipelines from "../pipelinesStages/generalPiplines.js";
+import mongoose from "mongoose";
+import globalErrors from "../errors/globalErrors.js";
 
 const checkUsername = catchAsync(async (req, res, next) => {
   const { username } = req.body;
@@ -104,10 +106,20 @@ const getUserById = catchAsync(async (req, res, next) => {
     ],
   });
 
-  sendResponse(res, { data: { user } });
+  sendResponse(res, { data: { user: user[0] } });
 });
+
 const getUsersByIds = catchAsync(async (req, res, next) => {
-  const { userIds } = req.body;
+  let { userIds } = req.body;
+
+  const invalidUserIds = userIds.filter(
+    (id) => !mongoose.Types.ObjectId.isValid(id)
+  );
+
+  if (invalidUserIds.length > 0)
+    return next(globalErrors.invalidOBjectId(invalidUserIds));
+
+  userIds = userIds.map((id) => mongoose.Types.ObjectId(id));
 
   if (!Array.isArray(userIds)) return next(userErrors.provideArrayOfIds);
   const users = await userModel.aggregate([
@@ -127,10 +139,21 @@ const changePassword = catchAsync(async (req, res, next) => {
   user.password = req.body.new;
   user.hashedCode = undefined;
   user.codeExpired = undefined;
+  user.isLoggedIn = false;
 
   await user.save();
 
-  res.clearCookie("refreshToken");
+  res.clearCookie("refreshToken", {
+    path: "/api/auth", // Match the path used when setting the cookie
+    httpOnly: true, // Ensure all other attributes match
+    sameSite: "Strict",
+  });
+
+  // Clear the access token as well
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    sameSite: "Strict",
+  });
 
   sendResponse(res, {
     code: 202,
@@ -140,6 +163,9 @@ const changePassword = catchAsync(async (req, res, next) => {
 
 const sendRequest = catchAsync(async (req, res, next) => {
   const { userId } = req.params;
+  const { contacts } = req.user;
+
+  if (contacts.includes(userId)) return next(userErrors.alreadyContact());
 
   const userData = {
     _id: req.user._id,
@@ -220,20 +246,32 @@ const getPendingRequests = catchAsync(async (req, res, next) => {
 const getOfflineNotifications = async (req, res, next) => {
   const user = req.user;
 
-  const notifications = await notificationModel.find({ user: user._id });
+  const notifications = await notificationModel.find({
+    user: user._id,
+    delivered: false,
+  });
+
+  await notificationModel.updateMany(
+    { user: user._id },
+    { $set: { delivered: true } }
+  );
+
+  await userModel.findByIdAndUpdate(user._id, {
+    $set: { notifications: [] },
+  });
 
   sendResponse(res, { data: { notifications } });
-
-  await notifications.remove();
 };
 
 const getOnlineContacts = async (req, res, next) => {
   const user = req.user;
-  const onlineUsers = await userModel
+
+  const onlineContacts = await userModel
     .find({ _id: { $in: user.contacts }, online: true })
-    .select("_id")
+    .select("_id name username avatar online")
     .lean();
-  sendResponse(res, { data: { onlineUsers } });
+
+  sendResponse(res, { data: { onlineContacts } });
 };
 
 const userController = {
