@@ -7,38 +7,27 @@ import eventsTypes from "../services/offlineNotification/eventTypes.js";
 
 const addStory = catchAsync(async (req, res, next) => {
   const { description } = req.body;
-  const { contacts } = req.user;
-  const image = res.locals.uploadedFiles[0]?.url || null;
+  const { contacts, _id: user } = req.user;
+
+  const image = null;
+
+  if (res.locals.uploadedFile) image = res.locals.uploadedFile.url;
 
   if (!description && !image)
     return next(storyErrors.provideDescriptionOrImage());
 
   const newStory = await storyModel.create({
-    user: req.user._id,
+    user,
     description,
     image,
   });
-
   await notifyContacts(newStory, contacts, eventsTypes.storyNew);
-
-  sendResponse(res, { data: newStory });
-});
-
-const getNewStories = catchAsync(async (req, res, next) => {
-  const user = req.user;
-
-  const newStories = storyModel
-    .find({ _id: { $in: user.newStories } })
-    .select("content user createdAt _id");
-
-  user.newStories = [];
-  await user.save();
-
-  sendResponse(res, { data: { newStories } });
+  sendResponse(res, { data: { newStory } });
 });
 
 const deleteStory = catchAsync(async (req, res, next) => {
   const { storyId } = req.params;
+  const { contacts } = req.user;
   const user = req.user;
 
   await storyModel.findByIdAndDelete(storyId);
@@ -97,7 +86,7 @@ const viewStory = catchAsync(async (req, res, next) => {
   //check if the story owner is contact to the current user
 
   if (!contacts.includes(story.user.toString()))
-    return next(storyErrors.notYourStory());
+    return next(storyErrors.notContact());
 
   // Add the user to the list of viewers if they haven't already viewed the story
   if (!story.viewers.includes(userId)) {
@@ -113,7 +102,7 @@ const viewStory = catchAsync(async (req, res, next) => {
     );
   } else return next(storyErrors.alreadyViewed());
 
-  sendResponse(res, { data: { story } });
+  sendResponse(res, { message: "viewed" });
 });
 
 const getUserStories = catchAsync(async (req, res, next) => {
@@ -128,7 +117,6 @@ const getUserStories = catchAsync(async (req, res, next) => {
 
 const storyController = {
   addStory,
-  getNewStories,
   deleteStory,
   getUserStories,
   getAllStories,

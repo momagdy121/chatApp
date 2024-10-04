@@ -16,6 +16,8 @@ const eventTypes = {
   requestReceive: "request:receive",
   typingStart: "typing:start",
   typingStop: "typing:stop",
+  userOnline: "user:online",
+  userOffline: "user:offline",
 };
 
 export default eventTypes;

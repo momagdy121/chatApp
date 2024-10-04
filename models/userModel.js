@@ -83,12 +83,14 @@ const userSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
       },
     ],
+
     chats: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "chats",
       },
     ],
+
     groups: [
       {
         type: mongoose.Schema.Types.ObjectId,

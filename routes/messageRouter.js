@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
   deleteMessage,
   getAllChats,
-  getChat,
+  getChatMessages,
   getOfflineMessages,
   updateMessage,
 } from "./../controllers/messageController.js";
@@ -21,10 +21,8 @@ messageRouter.param(
 
 messageRouter.use(authValidation.verifyAccessToken);
 
-messageRouter.get("/chats", getAllChats);
+messageRouter.get("/chats", getAllChats).get("/chats/:chatId", getChatMessages);
 messageRouter.get("/offline", getOfflineMessages);
-
-messageRouter.get("/:chatId", getChat);
 
 messageRouter.patch(
   "/:messageId",

@@ -1,5 +1,4 @@
 import { Router } from "express";
-import multer from "multer";
 import storyController from "../controllers/storyController.js";
 import authValidation from "../middlewares/authValidation/index.js";
 import isDocumentExists from "../middlewares/globalValidation/isDocumentExists.js";
@@ -7,8 +6,7 @@ import storyModel from "../models/storyModel.js";
 import isDocumentYours from "../middlewares/globalValidation/isDocumentYours.js";
 import validateObjectID from "../middlewares/globalValidation/validateObjectID.js";
 import uploadImage from "./../middlewares/uploadImage.js";
-
-const upload = multer();
+import upload from "../middlewares/multer.js";
 const storyRouter = Router();
 
 storyRouter.use(authValidation.verifyAccessToken);
@@ -20,21 +18,15 @@ storyRouter.param("storyId", isDocumentExists(storyModel, "storyId", "story"));
 storyRouter
   .route("/")
   .get(storyController.getUserStories) //current logged in user
-  .post(
-    upload.fields([{ name: "image", maxCount: 1 }]),
-    uploadImage,
-    storyController.addStory
-  );
+  .post(upload.single("image"), uploadImage, storyController.addStory);
 
-storyRouter.route("/:storyId/view", storyController.viewStory);
-
-storyRouter.delete(
-  "/:storyId",
-  isDocumentYours(storyModel, "storyId", "story"),
-  storyController.deleteStory
-);
-
-storyRouter.get("/new", storyController.getNewStories);
+storyRouter
+  .delete(
+    "/:storyId",
+    isDocumentYours(storyModel, "storyId", "story"),
+    storyController.deleteStory
+  )
+  .post("/:storyId/view", storyController.viewStory);
 
 storyRouter.get("/all", storyController.getAllStories);
 

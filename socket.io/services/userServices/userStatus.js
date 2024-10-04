@@ -1,4 +1,5 @@
 import userModel from "../../../models/userModel.js";
+import eventTypes from "../../../services/offlineNotification/eventTypes.js";
 
 // Function to add a user to the online list and notify their contacts
 export const addUserToOnline = async (socket, io, userSocketMap) => {
@@ -11,7 +12,8 @@ export const addUserToOnline = async (socket, io, userSocketMap) => {
   // Notify only online contacts
   contacts.forEach((contactId) => {
     const contactSocketId = userSocketMap.get(contactId.toString());
-    if (contactSocketId) io.to(contactSocketId).emit("user:online", userId);
+    if (contactSocketId)
+      io.to(contactSocketId).emit(eventTypes.userOnline, userId);
   });
 };
 
@@ -28,6 +30,7 @@ export const removeUserFromOnline = async (socket, io, userSocketMap) => {
   contacts.forEach((contactId) => {
     const contactSocketId = userSocketMap.get(contactId.toString());
 
-    if (contactSocketId) io.to(contactSocketId).emit("user:offline", userId);
+    if (contactSocketId)
+      io.to(contactSocketId).emit(eventTypes.userOffline, userId);
   });
 };
