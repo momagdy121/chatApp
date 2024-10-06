@@ -8,9 +8,10 @@ import {
   saveMsgToOfflineUser,
   getOfflineMembers,
   notifyGroup,
+  getOnlineMembers,
 } from "../../utils.js";
 
-const sendGroupMessage = async (msg, socket, io, ack) => {
+const sendGroupMessage = async (msg, socket, ack) => {
   try {
     const message = constructGroupMessage(msg, socket);
 
@@ -30,9 +31,10 @@ const sendGroupMessage = async (msg, socket, io, ack) => {
 
     const offlineMembers = getOfflineMembers(group.members);
 
-    const onlineMembers = getOnlineMembers(group.members);
-    if (onlineMembers.length > 0)
-      ack({ message: newMessage._id, status: eventTypes.messageDelivered });
+    ack({
+      success: true,
+      message: newMessage,
+    });
 
     if (offlineMembers.length > 0)
       saveMsgToOfflineUser(message, offlineMembers);
@@ -42,7 +44,7 @@ const sendGroupMessage = async (msg, socket, io, ack) => {
 
     //push message id to the group
   } catch (error) {
-    io.to(socket.id).emit("err", error.message);
+    ack({ success: false, error: error.message });
   }
 };
 

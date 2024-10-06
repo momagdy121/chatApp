@@ -7,6 +7,8 @@ import { userSocketMap } from "./handlers/connectionHandler.js";
 import offlineManyNotifier from "../services/offlineNotification/offlineManyNotifier.js";
 import offlineOneNotifier from "../services/offlineNotification/offlineOneNotifier.js";
 
+import mongoose from "mongoose";
+
 export const pushMessageToChat = async (newMessage) => {
   const { chat: currentChatId } = newMessage;
 
@@ -74,9 +76,16 @@ export const constructSeenMessage = (jsonMsg) => {
   return message;
 };
 
-export const isAuthorizedToMarkAsRead = (CurrentChat, chats) => {
-  if (!chats.includes(CurrentChat.toString()))
+export const isAuthorizedToMarkAsRead = (currentChatId, chatsListIds) => {
+  const stringCurrentChatId = currentChatId.toString();
+  const stringChatsListIds = chatsListIds.map((id) => id.toString());
+
+  console.log("Current Chat ID:", stringCurrentChatId);
+  console.log("Chats List IDs:", stringChatsListIds);
+
+  if (!stringChatsListIds.includes(stringCurrentChatId)) {
     throw new Error("Unauthorized to mark as read in this chat");
+  }
 };
 
 export const constructGroupMessage = (jsonMsg, socket) => {
@@ -118,7 +127,7 @@ export async function notifyGroup(
 
   io.to(groupId.toString())
     .except([senderSocketId])
-    .emit(event, { groupId, content });
+    .emit(event, { groupId, ...content });
 
   if (saveToOfflineUser) {
     const offlineMembers = getOfflineMembers(members);
@@ -135,6 +144,8 @@ export async function notifyContacts(content, contactsIds, event) {
 
   contactsIds.forEach((contact) => {
     const receiverSocketId = getUserSocketId(contact);
+
+    console.log(contact, userSocketMap);
     if (receiverSocketId) io.to(receiverSocketId).emit(event, content);
     else offlineContactsIds.push(contact);
   });

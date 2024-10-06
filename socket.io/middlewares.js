@@ -13,7 +13,7 @@ export const verifyIoToken = async (socket, next) => {
 
     const user = await userModel
       .findById(payload.id)
-      .select("_id name email avatar groups contacts")
+      .select("_id name email avatar groups contacts chats")
       .lean();
 
     socket.user = user;

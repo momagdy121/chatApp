@@ -134,7 +134,7 @@ export const updateMessage = catchAsync(async (req, res, next) => {
     });
   }
   //notify the user
-  else notifyUser(updatedMessage, user._id, eventTypes.messageUpdate);
+  else notifyUser(updatedMessage, message.receiver, eventTypes.messageUpdate);
 
   sendResponse(res, { code: 202, data: { updatedMessage } });
 });

@@ -21,7 +21,9 @@ const addStory = catchAsync(async (req, res, next) => {
     description,
     image,
   });
+
   await notifyContacts(newStory, contacts, eventsTypes.storyNew);
+
   sendResponse(res, { data: { newStory } });
 });
 

@@ -36,13 +36,16 @@ const createGroup = catchAsync(async (req, res) => {
 });
 
 const editGroupDescription = catchAsync(async (req, res, next) => {
+  const { _id: userId } = req.user;
   const { groupId } = req.params;
   const { description } = req.body;
   const group = await groupModel.findByIdAndUpdate(groupId, { description });
 
+  notifyGroup(groupId, group.members, userId, eventTypes.groupUpdate, {
+    description,
+  });
   sendResponse(res, {
     message: "group description has been updated successfully",
-    data: { group },
   });
 });
 
@@ -208,7 +211,7 @@ const leaveGroup = catchAsync(async (req, res, next) => {
   // Notify the group of the member removal
   await notifyGroup(group._id, group.members, user._id, eventTypes.memberLeft, {
     memberId: member._id,
-    name: user.name,
+    user: user._id,
   });
 
   sendResponse(res, {

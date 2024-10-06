@@ -1,12 +1,13 @@
 import eventTypes from "../../../services/offlineNotification/eventTypes.js";
 import {
   constructSeenMessage,
+  getOtherUserChatId,
   isAuthorizedToMarkAsRead,
   MarkMessageChatAsRead,
   notifyUser,
-} from "./../../utils.js";
+} from "../../utils.js";
 
-async function messageRead(msg, socket, io, ack) {
+async function chatRead(msg, socket, ack) {
   try {
     const user = socket.user;
 
@@ -18,12 +19,12 @@ async function messageRead(msg, socket, io, ack) {
 
     const receiverId = await getOtherUserChatId(chat, user._id);
 
-    notifyUser({ chat, user: user._id }, receiverId, eventTypes.messageRead);
+    notifyUser({ chat, user: user._id }, receiverId, eventTypes.chatRead);
 
     ack({ success: true });
   } catch (error) {
-    io.to(socket.id).emit("err", error.message);
+    ack({ success: false, error: error.message });
   }
 }
 
-export default messageRead;
+export default chatRead;

@@ -2,7 +2,7 @@ const eventTypes = {
   messageUpdate: "message:update",
   messageDelete: "message:delete",
   messageNew: "message:new",
-  messageRead: "message:read",
+  chatRead: "chat:read",
   messageDelivered: "message:delivered",
   messageSent: "message:sent",
   groupUpdate: "group:update",

@@ -183,10 +183,10 @@ const sendRequest = catchAsync(async (req, res, next) => {
   await user.save();
 
   await notifyUser(
-    {
-      user: userData,
-    },
+    { userData },
+
     userId,
+
     eventTypes.requestReceive
   );
 

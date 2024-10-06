@@ -1,6 +1,6 @@
 import { getUserSocketId } from "../../utils.js";
 
-const typingState = (msg, socket, io, event) => {
+const typingState = (msg, socket, io, event, ack) => {
   try {
     const senderId = socket.user._id.toString();
     const message = JSON.parse(msg);
@@ -14,8 +14,10 @@ const typingState = (msg, socket, io, event) => {
     if (receiverSocketId) {
       io.to(receiverSocketId).emit(event, senderId);
     }
+
+    ack({ success: true });
   } catch (error) {
-    io.to(socket.id).emit("err", error.message);
+    ack({ success: false, error: error.message });
   }
 };
 

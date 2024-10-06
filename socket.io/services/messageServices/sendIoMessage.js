@@ -19,24 +19,30 @@ const sendIoMessage = async (msg, socket, io, ack) => {
 
     const receiverSocketId = getUserSocketId(message.receiver);
 
+    message.sender = socket.user;
+
     // Save the message to DB
-    let newMessage = await messageModel.create(message);
+    let newMessage = new messageModel(message);
 
     if (receiverSocketId) {
-      newMessage.sender = socket.user;
+      newMessage.status = "delivered";
       io.to(receiverSocketId).emit(eventTypes.messageNew, newMessage);
-      ack({ message: newMessage._id, status: eventTypes.messageDelivered });
+      ack({ success: true, message: newMessage });
     }
     // Save message to be delivered when the user is offline
     else {
       await saveMsgToOfflineUser(newMessage, message.receiver);
-      ack({ message: newMessage._id, status: eventTypes.messageSent });
+      ack({
+        success: true,
+        message: newMessage,
+      });
     }
 
+    await newMessage.save();
     // Push the message into the chat between sender and receiver
     await pushMessageToChat(newMessage);
   } catch (error) {
-    io.to(socket.id).emit("err", error.message);
+    ack({ success: false, error: error.message });
   }
 };
 
