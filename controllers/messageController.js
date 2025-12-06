@@ -1,4 +1,4 @@
-import catchAsync from "./../Utils/catchAsync.js";
+import catchAsync from "./../utils/catchAsync.js";
 import messageModel from "./../models/messageModel.js";
 import userModel from "./../models/userModel.js";
 import chatModel from "./../models/chatModel.js";

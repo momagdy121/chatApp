@@ -7,7 +7,7 @@ import groupModel from "./../models/groupModel.js";
 import verifyAccessToken from "./../middlewares/authValidation/verifyAccessToken.js";
 import checkBodyFieldsExistence from "./../middlewares/globalValidation/checkBodyFieldsExistence.js";
 import areContacts from "../middlewares/groupValidation/areContacts.js";
-import isAlreadyMembers from "../middlewares/groupValidation/AlreadyMembers.js";
+import isAlreadyMembers from "../middlewares/groupValidation/alreadyMembers.js";
 
 const groupRouter = Router();
 

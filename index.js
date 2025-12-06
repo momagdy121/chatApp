@@ -6,7 +6,7 @@ import cookieParser from "cookie-parser";
 import ListenToServer from "./config/server.js";
 import connectToDatabase from "./config/DB.js";
 import globalErrorHandler from "./middlewares/globalErrorhandler.js";
-import ApiError from "./Utils/apiError.js";
+import ApiError from "./utils/apiError.js";
 import { app } from "./socket.io/socket.js";
 
 import messageRouter from "./routes/messageRouter.js";
@@ -25,6 +25,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(cookieParser());
 
+app.get("/", (req, res, next) => {
+  res.send("Welcome to Chat Application API");
+});
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api/messages", messageRouter);

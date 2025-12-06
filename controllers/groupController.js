@@ -1,4 +1,4 @@
-import catchAsync from "../Utils/catchAsync.js";
+import catchAsync from "../utils/catchAsync.js";
 import groupModel from "../models/groupModel.js";
 import sendResponse from "../utils/sendResponse.js";
 import groupErrors from "../errors/groupErrors.js";

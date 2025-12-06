@@ -1,5 +1,5 @@
 import groupModel from "../../models/groupModel.js";
-import ApiError from "../../Utils/apiError.js";
+import ApiError from "../../utils/apiError.js";
 
 const isGroupMember = async (req, res, next) => {
   const user = req.user;

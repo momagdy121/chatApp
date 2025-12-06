@@ -171,7 +171,7 @@ userSchema.methods.compareOTPs = async function (inputCode, DBcode) {
 userSchema.query.selectBasicInfo = function () {
   return this.select("name username avatar _id");
 };
-userSchema.pre("save", async function (next) {
+userSchema.pre("save", async function () {
   if (this.isModified("password")) {
     this.password = await hash(this.password, 12);
     this.changePassAt = Math.floor(Date.now() / 1000);
@@ -180,8 +180,6 @@ userSchema.pre("save", async function (next) {
     const OTP = await this.createOTP();
     await sendVC(this.email, OTP);
   }
-
-  next();
 });
 
 const userModel = mongoose.model("users", userSchema);
