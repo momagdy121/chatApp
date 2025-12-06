@@ -1,4 +1,4 @@
-import ApiError from "../../utils/apiError.js";
+import globalErrors from "../../errors/globalErrors.js";
 
 function checkBodyFieldsExistence(fields) {
   return (req, res, next) => {
@@ -6,7 +6,7 @@ function checkBodyFieldsExistence(fields) {
 
     if (missingFields) {
       return next(
-        new ApiError(`Missing or empty fields: ${missingFields}`, 400)
+        globalErrors.missingFields(missingFields)
       );
     }
 

@@ -1,4 +1,4 @@
-import ApiError from "../utils/apiError.js";
+import authErrors from "../errors/authErrors.js";
 import userModel from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 
@@ -7,7 +7,7 @@ export const verifyIoToken = async (socket, next) => {
     const token =
       socket.handshake.auth?.token || socket.handshake.headers?.token;
 
-    if (!token) next(new ApiError("please provide the token", 400));
+    if (!token) next(authErrors.missingToken());
 
     const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET_STRING);
 
@@ -18,6 +18,6 @@ export const verifyIoToken = async (socket, next) => {
 
     socket.user = user;
   } catch (err) {
-    return next(new ApiError(err.message, 400));
+    return next(authErrors.tokenError(err.message));
   }
 };

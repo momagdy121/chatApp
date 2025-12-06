@@ -22,6 +22,10 @@ const authErrors = {
   missingRefreshToken: () =>
     new ApiError("refresh token not found ,login again or provide it", 401),
   tokenExpired: () => new ApiError("Token expired", 401),
+  missingToken: () => new ApiError("please provide the token", 400),
+  tokenError: (message) => new ApiError(message, 400),
+  invalidToken: () => new ApiError("invalid Token", 401),
+  tokenHasExpired: () => new ApiError("The token has been expired", 401),
 };
 
 export default authErrors;

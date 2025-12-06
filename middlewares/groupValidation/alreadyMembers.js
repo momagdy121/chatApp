@@ -1,5 +1,5 @@
 import groupModel from "../../models/groupModel.js";
-import ApiError from "../../utils/apiError.js";
+import groupErrors from "../../errors/groupErrors.js";
 const alreadyMembers = async (req, res, next) => {
   const { groupId } = req.params;
   const { members } = req.body;
@@ -12,10 +12,7 @@ const alreadyMembers = async (req, res, next) => {
 
   if (alreadyInGroup.length > 0) {
     return next(
-      new ApiError(
-        `User(s) ${alreadyInGroup.join(", ")} are already in the group`,
-        400
-      )
+      groupErrors.alreadyInGroup(alreadyInGroup)
     );
   }
 

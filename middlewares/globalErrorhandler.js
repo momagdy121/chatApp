@@ -1,4 +1,5 @@
-import ApiError from "../utils/apiError.js";
+import globalErrors from "../errors/globalErrors.js";
+import authErrors from "../errors/authErrors.js";
 
 const globalErrorHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
@@ -46,20 +47,17 @@ function handleDevError(err, res) {
 
 function handleValidatorErrors(err) {
   const errors = Object.values(err.errors).map((error) => error.message);
-  return new ApiError(errors.join(", "), 400);
+  return globalErrors.validationErrors(errors);
 }
 
 function handleOtherErrors(err) {
-  return new ApiError(
-    err.message || "please try to report the backend developer",
-    err.statusCode || 500
-  );
+  return globalErrors.otherErrors(err.message, err.statusCode);
 }
 
 function handleInvalidToken() {
-  return new ApiError("invalid Token", 401);
+  return authErrors.invalidToken();
 }
 function handleTokenExpiration() {
-  return new ApiError("The token has been expired", 401);
+  return authErrors.tokenHasExpired();
 }
 export default globalErrorHandler;

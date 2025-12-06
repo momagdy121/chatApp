@@ -1,4 +1,4 @@
-import ApiError from "../../utils/apiError.js";
+import globalErrors from "../../errors/globalErrors.js";
 
 function isDocumentYours(
   docModel,
@@ -12,7 +12,7 @@ function isDocumentYours(
     const document = await docModel.findOne({ _id: req.params[paramId] });
 
     if (document[fieldName].toString() !== user._id.toString())
-      return next(new ApiError(`this ${docName} is not yours`, 403));
+      return next(globalErrors.documentNotYours(docName));
 
     req[docName] = document;
 

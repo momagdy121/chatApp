@@ -6,7 +6,7 @@ import express from "express";
 
 export const app = express();
 
-const server = createServer(app);
+export const server = createServer(app);
 
 export const io = new Server(server, {
   cors: {

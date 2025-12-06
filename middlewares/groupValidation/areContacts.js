@@ -1,4 +1,4 @@
-import ApiError from "../../utils/apiError.js";
+import groupErrors from "../../errors/groupErrors.js";
 
 const areContacts = async (req, res, next) => {
   // Check if all members are in user's contacts
@@ -9,7 +9,7 @@ const areContacts = async (req, res, next) => {
 
   if (notContacts.length > 0) {
     return next(
-      new ApiError(`User(s) ${notContacts.join(", ")} not in contacts`, 400)
+      groupErrors.usersNotInContacts(notContacts)
     );
   }
 
